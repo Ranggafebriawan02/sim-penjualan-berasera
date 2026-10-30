@@ -250,6 +250,7 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="openTab('usecase')">🎭 Use Case Diagram</button>
+        <button class="tab-btn" onclick="openTab('flowchart')">🔄 Flowchart Sistem (End-to-End)</button>
         <button class="tab-btn" onclick="openTab('activity')">⚡ Activity Diagram (Checkout & FIFO)</button>
         <button class="tab-btn" onclick="openTab('sequence')">🔄 Sequence Diagram (Midtrans Pay)</button>
         <button class="tab-btn" onclick="openTab('architecture')">🏛️ System Architecture Diagram</button>
@@ -354,6 +355,100 @@ flowchart LR
                         <li>Mengevaluasi tren penjualan 6 bulan, produk terlaris, dan AOV.</li>
                         <li>Manajemen hak akses pengurus dan akun pelanggan.</li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB BARU: FLOWCHART SISTEM LENGKAP -->
+    <!-- ============================================================== -->
+    <div id="flowchart" class="tab-content">
+        <div class="diagram-card">
+            <div class="diagram-header">
+                <div>
+                    <h2>🔄 Flowchart Logika Sistem Informasi Penjualan Berasera</h2>
+                    <p>Bagan alir logika alur kerja sistem menyeluruh: Pasokan Gabah, Order, Pembayaran Gateway, hingga Algoritma FIFO Gudang</p>
+                </div>
+            </div>
+            <div class="mermaid-box">
+                <div class="mermaid">
+flowchart TD
+    subgraph FC_HULU["1. Alur Hulu: Pasokan Gabah Petani & Batch FIFO"]
+        P_Start([Mulai Pasokan]) --> P1[Petani Kirim Gabah/Beras ke Gudang]
+        P1 --> P2[Bendahara Input Pasokan: Petani, Produk, Kg, Harga Beli]
+        P2 --> P3[Sistem Generate Batch Baru tb_batch_beras: kode_batch & tgl_masuk]
+        P3 --> P4[Update Stok Agregat tb_produk]
+        P4 --> P_End([Batch Masuk Antrean FIFO Gudang])
+    end
+
+    subgraph FC_ORDER["2. Alur Pembelian: Keranjang & Checkout"]
+        C_Start([Mulai Order]) --> C1[Pembeli Pilih Beras & Masukkan Keranjang]
+        C1 --> C2[Buka Halaman Checkout]
+        C2 --> C3{Gunakan Poin Reward?}
+        C3 -->|Ya| C4[Potong Diskon Poin Rp 100/poin]
+        C3 -->|Tidak| C5[Hitung Total Belanja + Ongkir]
+        C4 --> C5
+        C5 --> C6{Pilih Metode Transaksi?}
+    end
+
+    subgraph FC_BAYAR["3. Alur Pembayaran & Validasi"]
+        C6 -->|Midtrans QRIS / VA| M1[Generate Snap Token Midtrans]
+        M1 --> M2[Pembeli Bayar via QRIS / Bank Transfer]
+        M2 --> M3[Webhook Callback Midtrans Diterima]
+        M3 --> M4{Status Settlement?}
+        M4 -->|Gagal/Expired| M_Batal[Pesanan Dibatalkan / Expire]
+        M4 -->|Sukses| M_Lunas[Status Pesanan: Diverifikasi]
+
+        C6 -->|Tunai / Kasir| T1[Pesanan Disimpan: Status Menunggu Verifikasi]
+        T1 --> T2[Pembeli Bayar Tunai ke Bendahara]
+        T2 --> T3[Bendahara Konfirmasi Bayar di SIM]
+        T3 --> M_Lunas
+    end
+
+    subgraph FC_FIFO["4. Alur Algoritma Pengeluaran FIFO & Selesai"]
+        M_Lunas --> F1[Ambil Daftar Batch dengan Stok > 0 Urut tgl_masuk ASC]
+        F1 --> F2{Apakah Qty Order <= Stok Batch Pertama?}
+        F2 -->|Ya| F3[Kurangi Stok Batch Pertama & Catat HPP di tb_pengeluaran_batch]
+        F2 -->|Tidak| F4[Habiskan Stok Batch Pertama, Catat HPP]
+        F4 --> F5[Ambil Sisa Qty dari Batch Berikutnya secara Berurutan]
+        F5 --> F3
+        F3 --> F6[Potong Stok Agregat tb_produk]
+        F6 --> F7[Hitung & Tambahkan Poin Reward ke tb_customer]
+        F7 --> F8[Cetak Struk Pembelian & Update Laporan Laba/Rugi FIFO]
+        F8 --> Finish([Selesai])
+    end
+
+    %% Relasi antar subgraf
+    P_End -.->|Ketersediaan Stok| C1
+    C6 --> M1
+    C6 --> T1
+    M_Batal --> FinishBatal([Selesai - Dibatalkan])
+
+    classDef fcStep fill:#f8fafc,stroke:#334155,stroke-width:1.5px;
+    classDef fcDecision fill:#fef3c7,stroke:#d97706,stroke-width:1.5px;
+    classDef fcSuccess fill:#ecfdf5,stroke:#059669,stroke-width:2px;
+    classDef fcDanger fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px;
+    
+    class P1,P2,P3,P4,C1,C2,C4,C5,M1,M2,M3,T1,T2,T3,F1,F3,F4,F5,F6,F7,F8 fcStep;
+    class C3,C6,M4,F2 fcDecision;
+    class M_Lunas,Finish fcSuccess;
+    class M_Batal,FinishBatal fcDanger;
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🌾 1. Masukan Pasokan & Inisiasi Batch</h4>
+                    <p>Setiap pembelian gabah/beras dari petani langsung membentuk entri unik di `tb_batch_beras` dengan `kode_batch` dan `tgl_masuk` yang menjadi kunci dasar antrean FIFO.</p>
+                </div>
+                <div class="info-card">
+                    <h4>💳 2. Percabangan Pembayaran</h4>
+                    <p>Sistem membedakan alur verifikasi antara webhook otomatis payment gateway (QRIS/VA) dan validasi kasir manual oleh Bendahara sebelum masuk ke pemotongan stok.</p>
+                </div>
+                <div class="info-card">
+                    <h4>⚙️ 3. Algoritma Inti FIFO (HPP Aktual)</h4>
+                    <p>Sistem melakukan perulangan alokasi: jika order melebihi sisa kapasitas batch pertama, sistem menghabiskan batch tersebut lalu melompat ke batch berikutnya hingga total kilogram terpenuhi.</p>
                 </div>
             </div>
         </div>
@@ -605,3 +700,4 @@ graph TB
 </script>
 </body>
 </html>
+
