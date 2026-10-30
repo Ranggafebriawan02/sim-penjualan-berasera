@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisasi ERD Lengkap — SIM Penjualan Beras Berasera</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Mermaid JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #ecfdf5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Header Bar */
+        .header {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 32px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #a7f3d0;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-pill {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        /* Controls */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg);
+            border-color: #cbd5e1;
+        }
+
+        /* Diagram Canvas */
+        .erd-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .mermaid-container {
+            min-width: 950px;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            transform-origin: top center;
+            transition: transform 0.2s ease;
+        }
+
+        /* Legend & Explanations */
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .legend-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .legend-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark);
+        }
+
+        .legend-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .legend-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .legend-list li strong {
+            color: var(--dark);
+            min-width: 130px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Section -->
+    <div class="header">
+        <div>
+            <h1>🌾 Entity-Relationship Diagram (ERD)</h1>
+            <p>Database: <strong>db_penjualan_berasera</strong> • Sistem Informasi Manajemen Penjualan Beras Organik</p>
+        </div>
+        <div class="header-badges">
+            <span class="badge-pill">13 Tabel Entitas</span>
+            <span class="badge-pill">Metode FIFO Batch Terintegrasi</span>
+            <span class="badge-pill">Payment Gateway Midtrans</span>
+            <span class="badge-pill">Loyalty Points System</span>
+        </div>
+    </div>
+
+    <!-- Controls Toolbar -->
+    <div class="controls-bar">
+        <div style="font-size: 13.5px; font-weight: 600; color: #475569;">
+            🔍 Interaktif: Anda dapat memperbesar, memperkecil tampilan, atau mencetak ERD ini.
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-outline" onclick="zoomIn()">➕ Zoom In</button>
+            <button class="btn btn-outline" onclick="zoomOut()">➖ Zoom Out</button>
+            <button class="btn btn-outline" onclick="resetZoom()">🔄 Reset</button>
+            <button class="btn" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+        </div>
+    </div>
+
+    <!-- Diagram Display -->
+    <div class="erd-card">
+        <div id="mermaidWrapper" class="mermaid-container">
+            <div class="mermaid">
+erDiagram
+    tb_kategori ||--o{ tb_produk : "mengelompokkan"
+    tb_kualitas ||--o{ tb_produk : "standar mutu"
+    tb_produk ||--o{ tb_batch_beras : "antrean batch"
+    tb_produk ||--o{ tb_pasokan : "pasokan masuk"
+    tb_produk ||--o{ tb_penjualan_detail : "rincian order"
+
+    tb_pemasok ||--o{ tb_pasokan : "memasok gabah"
+    tb_user ||--o{ tb_pasokan : "mencatat"
+    tb_batch_beras ||--o{ tb_pasokan : "batch pasokan"
+
+    tb_customer ||--o{ tb_penjualan : "melakukan order"
+    tb_pengiriman ||--o{ tb_penjualan : "metode kurir"
+    tb_user ||--o{ tb_penjualan : "verifikasi"
+
+    tb_penjualan ||--|{ tb_penjualan_detail : "memiliki item"
+    tb_penjualan ||--o| tb_pembayaran : "pembayaran"
+    tb_user ||--o{ tb_pembayaran : "validasi kasir"
+
+    tb_penjualan_detail ||--|{ tb_pengeluaran_batch : "alokasi FIFO"
+    tb_batch_beras ||--o{ tb_pengeluaran_batch : "potong stok"
+
+    tb_customer ||--o{ tb_riwayat_poin : "mutasi poin"
+    tb_penjualan ||--o{ tb_riwayat_poin : "menghasilkan"
+
+    tb_kategori {
+        int id_kategori PK
+        varchar nama_kategori
+        text deskripsi_kategori
+    }
+
+    tb_kualitas {
+        int id_kualitas PK
+        varchar nama_kualitas
+        varchar standar_butir_patah
+        decimal kadar_air_maks
+        int derajat_sosoh_min
+        varchar keterangan_kemasan
+    }
+
+    tb_produk {
+        int id_produk PK
+        int id_kategori FK
+        int id_kualitas FK
+        varchar nama_produk
+        text deskripsi
+        varchar satuan
+        int harga
+        int stok
+        varchar gambar
+    }
+
+    tb_pemasok {
+        int id_pemasok PK
+        varchar nama_pemasok
+        varchar telepon
+        text alamat
+        varchar rekening_bank
+        enum status_pemasok
+    }
+
+    tb_batch_beras {
+        int id_batch PK
+        int id_produk FK
+        varchar kode_batch UK
+        date tgl_masuk
+        date tgl_panen_giling
+        date tgl_kadaluarsa
+        int stok_awal
+        int stok_sisa
+        int harga_pokok_beli
+        enum status_batch
+    }
+
+    tb_pasokan {
+        int id_pasokan PK
+        int id_pemasok FK
+        int id_produk FK
+        int id_batch FK
+        date tgl_pasok
+        int jumlah_kg
+        int harga_per_kg
+        int total_bayar
+        enum status_pembayaran_petani
+        int id_user FK
+    }
+
+    tb_user {
+        int id_user PK
+        varchar nama
+        varchar username UK
+        varchar password
+        varchar gambar
+        enum level
+    }
+
+    tb_customer {
+        int id_customer PK
+        varchar nama_customer
+        text alamat
+        varchar telepon
+        varchar email UK
+        varchar username UK
+        varchar password
+        int total_poin
+        enum tier_membership
+    }
+
+    tb_pengiriman {
+        int id_pengiriman PK
+        varchar nama_pengiriman
+        int minimal_ongkir
+    }
+
+    tb_penjualan {
+        varchar id_penjualan PK
+        date tgl_jual
+        int id_customer FK
+        int total
+        int ongkir
+        int poin_digunakan
+        int diskon_poin
+        int poin_didapat
+        text note
+        text alamat_pengiriman
+        enum status_penjualan
+        enum metode_transaksi
+        int id_pengiriman FK
+        int id_user FK
+    }
+
+    tb_penjualan_detail {
+        int id_penjualan_detail PK
+        varchar id_penjualan FK
+        int id_produk FK
+        int jumlah
+        int harga_satuan
+        int sub_total
+        varchar status_detail
+    }
+
+    tb_pengeluaran_batch {
+        int id_pengeluaran_batch PK
+        int id_penjualan_detail FK
+        int id_batch FK
+        int jumlah_keluar
+        int hpp_satuan
+        int subtotal_hpp
+    }
+
+    tb_pembayaran {
+        int id_pembayaran PK
+        varchar id_penjualan FK
+        enum gateway_provider
+        varchar transaction_id
+        varchar metode_pembayaran
+        varchar va_number
+        varchar snap_token
+        int nominal_bayar
+        enum status_pembayaran
+        datetime waktu_transaksi
+        datetime waktu_bayar
+        text payload_callback
+        int id_user FK
+    }
+
+    tb_riwayat_poin {
+        int id_riwayat_poin PK
+        int id_customer FK
+        varchar id_penjualan FK
+        enum jenis_mutasi
+        int jumlah_poin
+        int saldo_akhir
+        varchar keterangan
+        datetime tgl_mutasi
+    }
+            </div>
+        </div>
+    </div>
+
+    <!-- Explanations Cards -->
+    <div class="legend-grid">
+        <div class="legend-card">
+            <h3>🏷️ Modul Katalog & Kualitas</h3>
+            <ul class="legend-list">
+                <li><strong>tb_kategori</strong> Kategori varietas beras (Organik Merah, Hitam, Pandan Wangi).</li>
+                <li><strong>tb_kualitas</strong> Standar SNI beras (butir patah, kadar air maks, derajat sosoh).</li>
+                <li><strong>tb_produk</strong> Master produk lengkap dengan stok agregat dan harga retail.</li>
+            </ul>
+        </div>
+
+        <div class="legend-card">
+            <h3>🌾 Modul Pasokan Petani & Batch FIFO</h3>
+            <ul class="legend-list">
+                <li><strong>tb_pemasok</strong> Data mitra tani/kelompok tani pemasok gabah.</li>
+                <li><strong>tb_pasokan</strong> Transaksi pembelian gabah/beras dari petani.</li>
+                <li><strong>tb_batch_beras</strong> Batch penyimpanan gudang berurutan berdasarkan tgl_masuk.</li>
+            </ul>
+        </div>
+
+        <div class="legend-card">
+            <h3>🛒 Modul Penjualan & Alokasi HPP FIFO</h3>
+            <ul class="legend-list">
+                <li><strong>tb_penjualan</strong> Faktur order checkout pembeli.</li>
+                <li><strong>tb_penjualan_detail</strong> Rincian item beras yang dibeli.</li>
+                <li><strong>tb_pengeluaran_batch</strong> Inti FIFO: potongan stok batch tertua & hitung HPP riil.</li>
+            </ul>
+        </div>
+
+        <div class="legend-card">
+            <h3>💳 Modul Pembayaran, Membership & User</h3>
+            <ul class="legend-list">
+                <li><strong>tb_pembayaran</strong> Transaksi Snap Midtrans (QRIS/VA) dan kasir tunai.</li>
+                <li><strong>tb_riwayat_poin</strong> Buku besar mutasi poin reward pembeli.</li>
+                <li><strong>tb_user</strong> Pengguna internal organisasi (Ketua & Bendahara).</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        SIM Penjualan Beras Organik "Berasera" • Poktan Gapsera Sejahtera Mandiri, Kota Metro
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+            primaryColor: '#ecfdf5',
+            primaryTextColor: '#064e3b',
+            primaryBorderColor: '#10b981',
+            lineColor: '#059669',
+            secondaryColor: '#f0fdf4',
+            tertiaryColor: '#ffffff'
+        }
+    });
+
+    let currentZoom = 1;
+    const wrapper = document.getElementById('mermaidWrapper');
+
+    function zoomIn() {
+        currentZoom += 0.15;
+        wrapper.style.transform = `scale(${currentZoom})`;
+    }
+
+    function zoomOut() {
+        if (currentZoom > 0.4) {
+            currentZoom -= 0.15;
+            wrapper.style.transform = `scale(${currentZoom})`;
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        wrapper.style.transform = 'scale(1)';
+    }
+</script>
+</body>
+</html>
