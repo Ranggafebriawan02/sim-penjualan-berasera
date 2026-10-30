@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi Diagram Lengkap — SIM Penjualan Berasera</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Mermaid JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #ecfdf5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Header Bar */
+        .header {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #a7f3d0;
+            font-size: 13.5px;
+            margin-top: 5px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+            overflow-x: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Diagram Box */
+        .diagram-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+
+        .diagram-header {
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .diagram-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diagram-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .mermaid-box {
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            min-height: 250px;
+        }
+
+        /* Explanations Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-card h4 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-card p, .info-card ul {
+            font-size: 12.5px;
+            color: #475569;
+        }
+
+        .info-card ul {
+            padding-left: 18px;
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-action:hover {
+            background: #f1f5f9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 0;
+            color: var(--text-muted);
+            font-size: 12.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>📐 Dokumentasi Diagram Arsitektur & Perilaku Sistem</h1>
+            <p>SIM Penjualan Beras Organik "Berasera" • Poktan Gapsera Sejahtera Mandiri</p>
+        </div>
+        <div>
+            <button class="btn-action" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+            <a href="/erd.html" style="text-decoration:none;" target="_blank"><button class="btn-action" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0; margin-left:6px;">Buka ERD Lengkap ↗</button></a>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('usecase')">🎭 Use Case Diagram</button>
+        <button class="tab-btn" onclick="openTab('activity')">⚡ Activity Diagram (Checkout & FIFO)</button>
+        <button class="tab-btn" onclick="openTab('sequence')">🔄 Sequence Diagram (Midtrans Pay)</button>
+        <button class="tab-btn" onclick="openTab('architecture')">🏛️ System Architecture Diagram</button>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: USE CASE DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="usecase" class="tab-content active">
+        <div class="diagram-card">
+            <div class="diagram-header">
+                <div>
+                    <h2>🎭 Use Case Diagram Sistem Berasera</h2>
+                    <p>Interaksi 3 Aktor: Pembeli (Customer), Bendahara, dan Ketua Poktan terhadap fitur-fitur sistem</p>
+                </div>
+            </div>
+            <div class="mermaid-box">
+                <div class="mermaid">
+flowchart LR
+    subgraph Aktor["👥 Aktor Sistem"]
+        direction TB
+        C["👤 Pembeli (Customer)"]
+        B["💼 Bendahara"]
+        K["👑 Ketua Poktan"]
+    end
+
+    subgraph System["🌾 SIM Penjualan Berasera"]
+        direction TB
+        subgraph ModulPembeli["Modul Pembeli"]
+            UC1(["Lihat Katalog & Mutu SNI"])
+            UC2(["Kelola Keranjang Belanja"])
+            UC3(["Checkout & Pilih Ekspedisi"])
+            UC4(["Bayar Midtrans QRIS/VA & Tunai"])
+            UC5(["Pantau Riwayat & Poin Reward"])
+            UC6(["Kelola Profil & Alamat"])
+        end
+
+        subgraph ModulBendahara["Modul Bendahara"]
+            UC7(["Kelola Master Produk & Stok"])
+            UC8(["Pencatatan Pasokan Petani & Batch"])
+            UC9(["Validasi Pembayaran Tunai"])
+            UC10(["Pantau Antrean Batch FIFO"])
+            UC11(["Laporan Laba/Rugi & Pembelian"])
+        end
+
+        subgraph ModulKetua["Modul Eksekutif / Ketua"]
+            UC12(["Dashboard Analisis Penjualan & AI Insight"])
+            UC13(["Manajemen User & Akun Customer"])
+            UC14(["Monitoring Performa Penjualan & Mitra"])
+        end
+    end
+
+    %% Relasi Customer
+    C --> UC1
+    C --> UC2
+    C --> UC3
+    C --> UC4
+    C --> UC5
+    C --> UC6
+
+    %% Relasi Bendahara
+    B --> UC7
+    B --> UC8
+    B --> UC9
+    B --> UC10
+    B --> UC11
+
+    %% Relasi Ketua
+    K --> UC12
+    K --> UC13
+    K --> UC14
+    K -.->|Akses Penuh| UC11
+
+    classDef aktorClass fill:#f8fafc,stroke:#334155,stroke-width:2px;
+    classDef ucClass fill:#ecfdf5,stroke:#059669,stroke-width:1.5px;
+    class C,B,K aktorClass;
+    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9,UC10,UC11,UC12,UC13,UC14 ucClass;
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>👤 Aktor: Pembeli (Customer)</h4>
+                    <ul>
+                        <li>Menjelajah katalog produk beras organik beserta standar mutunya.</li>
+                        <li>Memasukkan pesanan ke keranjang dan menukar poin loyalitas.</li>
+                        <li>Membayar melalui Midtrans Snap (QRIS/VA) atau Tunai di tempat.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>💼 Aktor: Bendahara</h4>
+                    <ul>
+                        <li>Mencatat pembelian gabah/beras dari petani mitra.</li>
+                        <li>Menata antrean batch gudang dengan aturan FIFO (First-In First-Out).</li>
+                        <li>Memvalidasi pelunasan uang pasokan petani & pembayaran kasir tunai.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>👑 Aktor: Ketua Poktan</h4>
+                    <ul>
+                        <li>Mengakses Dashboard Analisis Kecerdasan Penjualan & AI Insight.</li>
+                        <li>Mengevaluasi tren penjualan 6 bulan, produk terlaris, dan AOV.</li>
+                        <li>Manajemen hak akses pengurus dan akun pelanggan.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: ACTIVITY DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="activity" class="tab-content">
+        <div class="diagram-card">
+            <div class="diagram-header">
+                <div>
+                    <h2>⚡ Activity Diagram: Alur Checkout, Pembayaran & Alokasi FIFO</h2>
+                    <p>Proses menyeluruh dari pemilihan barang oleh pembeli hingga pemotongan stok batch tertua (FIFO) di gudang</p>
+                </div>
+            </div>
+            <div class="mermaid-box">
+                <div class="mermaid">
+flowchart TD
+    Start([● Mulai]) --> A1[Pembeli Tambah Beras ke Keranjang]
+    A1 --> A2[Buka Halaman Checkout]
+    A2 --> A3[Pilih Metode Pengiriman & Opsi Diskon Poin]
+    A3 --> A4{Pilih Metode Bayar?}
+    
+    A4 -->|Midtrans QRIS / VA| B1[Sistem Request Snap Token Midtrans]
+    A4 -->|Tunai / COD| B2[Set Status Pesanan: Menunggu Verifikasi]
+    
+    B1 --> C1[Pembeli Melakukan Pembayaran via E-Wallet/Bank]
+    C1 --> C2[Midtrans Kirim HTTP Webhook Notifikasi]
+    C2 --> C3{Status Webhook Settlement?}
+    
+    C3 -->|Gagal / Kadaluarsa| C4[Set Status: Dibatalkan / Expire]
+    C4 --> EndGagal([● Selesai - Gagal])
+    
+    C3 -->|Berhasil / Lunas| D1[Update tb_pembayaran: settlement]
+    B2 --> D0[Bendahara Konfirmasi Pembayaran Kasir]
+    D0 --> D1
+
+    D1 --> F1[Ambil Antrean Batch Beras Tertua tgl_masuk ASC]
+    F1 --> F2{Stok Batch Tertua Cukup?}
+    
+    F2 -->|Cukup| F3[Potong Stok Batch & Catat HPP di tb_pengeluaran_batch]
+    F2 -->|Kurang| F4[Habiskan Batch Tertua, Sisa Diambil dari Batch Berikutnya]
+    F4 --> F3
+
+    F3 --> G1[Potong Stok Agregat tb_produk]
+    G1 --> G2[Tambah Poin Loyalitas ke Akun Customer]
+    G2 --> G3[Pesanan Masuk Status Siap Kirim / Selesai]
+    G3 --> EndSukses([● Selesai - Berhasil])
+
+    classDef stepClass fill:#f0fdf4,stroke:#16a34a,stroke-width:1.5px;
+    classDef decisionClass fill:#fffbeb,stroke:#d97706,stroke-width:1.5px;
+    classDef endClass fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px;
+    class A1,A2,A3,B1,B2,C1,C2,D0,D1,F1,F3,F4,G1,G2,G3 stepClass;
+    class A4,C3,F2 decisionClass;
+    class C4,EndGagal,EndSukses endClass;
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>📦 Mekanisme FIFO (First-In, First-Out)</h4>
+                    <p>Saat pesanan berstatus diverifikasi/lunas, sistem secara otomatis mengecek batch beras yang tanggal masuknya paling awal (`tgl_masuk ASC`). Jika stok batch pertama habis, sistem memotong batch berikutnya dan mencatat HPP masing-masing batch pada tabel `tb_pengeluaran_batch`.</p>
+                </div>
+                <div class="info-card">
+                    <h4>💳 Verifikasi Dua Arah</h4>
+                    <p>Pembayaran otomatis via Midtrans ditangani oleh Webhook Callback real-time, sedangkan pembayaran tunai memerlukan otorisasi manual dari Bendahara/Kasir toko.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: SEQUENCE DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="sequence" class="tab-content">
+        <div class="diagram-card">
+            <div class="diagram-header">
+                <div>
+                    <h2>🔄 Sequence Diagram: Integrasi Pembayaran Midtrans Snap</h2>
+                    <p>Urutan pertukaran pesan antara Pembeli, Sistem Berasera, Midtrans API Gateway, dan Database</p>
+                </div>
+            </div>
+            <div class="mermaid-box">
+                <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Pembeli
+    participant App as SIM Berasera (Web)
+    participant Midtrans as Midtrans Snap Engine
+    participant DB as MySQL Database
+
+    Pembeli->>App: Klik "Bayar Pesanan Sekarang"
+    App->>DB: Query Total Belanja & Simpan tb_penjualan (Status: Menunggu)
+    App->>Midtrans: Request Snap Token (Order ID, Gross Amount, Customer Detail)
+    Midtrans-->>App: Return Snap Token
+    App-->>Pembeli: Tampilkan Pop-up Snap UI (QRIS/VA)
+    
+    Pembeli->>Midtrans: Scan QRIS / Transfer ke Virtual Account
+    Midtrans-->>Pembeli: Pembayaran Berhasil (Payment Success)
+    
+    Note over Midtrans,App: Webhook Asinkron Otomatis (Server-to-Server)
+    Midtrans->>App: POST /midtrans/notification (JSON Webhook)
+    App->>App: Validasi Signature Key Hash SHA512
+    App->>DB: Update tb_pembayaran (Status: settlement)
+    App->>DB: Update tb_penjualan (Status: diverifikasi)
+    App->>DB: Eksekusi Alokasi Batch FIFO & Tambah Poin Customer
+    App-->>Midtrans: HTTP 200 OK Response
+    
+    Pembeli->>App: Redirect ke Halaman /pesanan (Riwayat)
+    App-->>Pembeli: Status Pesanan "Lunas / Diproses" + Cetak Struk
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🔒 Keamanan Signature Key SHA512</h4>
+                    <p>Setiap payload webhook dari Midtrans diverifikasi menggunakan hashing SHA-512 `hash("sha512", order_id + status_code + gross_amount + server_key)` untuk memastikan keaslian notifikasi bayar.</p>
+                </div>
+                <div class="info-card">
+                    <h4>⚡ Pembaruan Otomatis Status Transaksi</h4>
+                    <p>Begitu transfer diterima bank/e-wallet, sistem langsung mengubah pesanan menjadi terverifikasi tanpa perlu pembeli mengunggah struk transfer manual.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: ARCHITECTURE DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="architecture" class="tab-content">
+        <div class="diagram-card">
+            <div class="diagram-header">
+                <div>
+                    <h2>🏛️ System Architecture Diagram</h2>
+                    <p>Struktur arsitektur berlapis (MVC) pada framework Laravel 12 dan integrasi layanan eksternal</p>
+                </div>
+            </div>
+            <div class="mermaid-box">
+                <div class="mermaid">
+graph TB
+    subgraph Presentation["1. Client / Presentation Layer"]
+        B1["💻 Web Browser (Responsive UI)"]
+        UI1["Blade Templates: Toko Beras Publik"]
+        UI2["Blade Templates: Customer Area (Pesanan & Profil)"]
+        UI3["Blade Templates: Admin Dashboard (Ketua & Bendahara)"]
+        B1 --- UI1
+        B1 --- UI2
+        B1 --- UI3
+    end
+
+    subgraph Application["2. Application Layer (Laravel 12 MVC)"]
+        R["Routing (web.php)"]
+        M1["Auth Middleware (auth:web & auth:customer)"]
+        
+        subgraph Controllers["Controllers"]
+            C_Home["HomeController & CartController"]
+            C_Order["OrderController & CustomerProfileController"]
+            C_Admin["AdminController (Analisis Cerdas & KPI)"]
+            C_Pasokan["PasokanController (FIFO Engine)"]
+            C_Midtrans["MidtransWebhookController"]
+        end
+
+        subgraph Services["Services & Intelligence"]
+            S_Midtrans["MidtransService (Snap Token API)"]
+            S_Fifo["FIFO Stock Allocator Service"]
+            S_AI["Rule-Based Analytics & Insight Engine"]
+        end
+    end
+
+    subgraph DataLayer["3. Data Persistence Layer (MySQL)"]
+        DB_Rel["Tabel Relasional (13 Tables)"]
+        DB_Views["SQL Views FIFO:
+- view_kartu_stok_fifo
+- view_laporan_laba_rugi_fifo
+- view_laporan_penjualan"]
+    end
+
+    subgraph External["4. External Services"]
+        PG["Midtrans Payment Gateway (Snap API)"]
+        CDN["Chart.js CDN & Font Providers"]
+    end
+
+    %% Flow Connectors
+    Presentation --> R
+    R --> M1
+    M1 --> Controllers
+    Controllers --> Services
+    Controllers --> DB_Rel
+    Controllers --> DB_Views
+    Services --> DB_Rel
+    Services <--> PG
+    Presentation <--> CDN
+
+    classDef c1 fill:#ecfdf5,stroke:#059669,stroke-width:1.5px;
+    classDef c2 fill:#eff6ff,stroke:#2563eb,stroke-width:1.5px;
+    classDef c3 fill:#fffbeb,stroke:#d97706,stroke-width:1.5px;
+    classDef c4 fill:#fdf4ff,stroke:#a21caf,stroke-width:1.5px;
+    class B1,UI1,UI2,UI3 c1;
+    class R,M1,Controllers,Services,C_Home,C_Order,C_Admin,C_Pasokan,C_Midtrans,S_Midtrans,S_Fifo,S_AI c2;
+    class DB_Rel,DB_Views c3;
+    class PG,CDN c4;
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🧩 Pemisahan Guard Otentikasi</h4>
+                    <p>Sistem menggunakan dua guard berbeda: `auth:web` untuk pengurus internal (Ketua & Bendahara) dengan hak akses CRUD gudang dan laporan, serta `auth:customer` untuk pembeli.</p>
+                </div>
+                <div class="info-card">
+                    <h4>📊 SQL Views Tingkat Lanjut</h4>
+                    <p>Database dilengkapi *database views* teroptimasi seperti `view_laporan_laba_rugi_fifo` yang langsung menghitung omset dan HPP batch secara presisi di level engine database.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Dokumentasi Diagram Perancangan Sistem Informasi • Basis Data Lanjut
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+            primaryColor: '#ecfdf5',
+            primaryTextColor: '#064e3b',
+            primaryBorderColor: '#10b981',
+            lineColor: '#059669',
+            secondaryColor: '#f0fdf4',
+            tertiaryColor: '#ffffff'
+        }
+    });
+
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.currentTarget.classList.add('active');
+        const activeTab = document.getElementById(tabId);
+        activeTab.classList.add('active');
+        
+        // Re-render mermaid inside the newly active tab if needed
+        mermaid.init(undefined, activeTab.querySelectorAll('.mermaid'));
+    }
+</script>
+</body>
+</html>
