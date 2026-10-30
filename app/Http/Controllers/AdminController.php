@@ -100,6 +100,110 @@ class AdminController extends Controller
             $laporanFifo = collect();
         }
 
+        // ================================================================
+        // ---- ANALISIS KECERDASAN PENJUALAN (AI-STYLE INSIGHTS) ----
+        // ================================================================
+
+        // [1] Perbandingan Omset: Bulan Ini vs Bulan Lalu
+        $omsetBulanLalu = Penjualan::whereYear('tgl_jual', now()->subMonth()->year)
+            ->whereMonth('tgl_jual', now()->subMonth()->month)
+            ->whereIn('status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->sum('total');
+        $pertumbuhanOmset = $omsetBulanLalu > 0
+            ? round((($omsetBulanIni - $omsetBulanLalu) / $omsetBulanLalu) * 100, 1)
+            : ($omsetBulanIni > 0 ? 100 : 0);
+
+        // [2] Produk Terlaris (Top 5 berdasarkan volume kg & omset)
+        $produkTerlaris = DB::table('tb_penjualan_detail as pd')
+            ->join('tb_penjualan as p', 'pd.id_penjualan', '=', 'p.id_penjualan')
+            ->join('tb_produk as pr', 'pd.id_produk', '=', 'pr.id_produk')
+            ->whereIn('p.status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->whereYear('p.tgl_jual', now()->year)
+            ->whereMonth('p.tgl_jual', now()->month)
+            ->select(
+                'pr.nama_produk',
+                DB::raw('SUM(pd.jumlah) as total_kg'),
+                DB::raw('SUM(pd.sub_total) as total_omset'),
+                DB::raw('COUNT(DISTINCT pd.id_penjualan) as jumlah_transaksi')
+            )
+            ->groupBy('pr.id_produk', 'pr.nama_produk')
+            ->orderByDesc('total_kg')
+            ->limit(5)
+            ->get();
+
+        // [3] Pelanggan Paling Loyal (Top 5 berdasarkan total belanja)
+        $pelangganLoyal = DB::table('tb_penjualan as p')
+            ->join('tb_customer as c', 'p.id_customer', '=', 'c.id_customer')
+            ->whereIn('p.status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->select(
+                'c.nama_customer',
+                'c.tier_membership',
+                'c.total_poin',
+                DB::raw('COUNT(p.id_penjualan) as jumlah_order'),
+                DB::raw('SUM(p.total) as total_belanja')
+            )
+            ->groupBy('p.id_customer', 'c.nama_customer', 'c.tier_membership', 'c.total_poin')
+            ->orderByDesc('total_belanja')
+            ->limit(5)
+            ->get();
+
+        // [4] Tren Omset 6 Bulan Terakhir (untuk chart tren bulanan)
+        $trenBulanan = Penjualan::selectRaw('YEAR(tgl_jual) as tahun, MONTH(tgl_jual) as bulan, SUM(total) as total_omset, COUNT(*) as jumlah_order')
+            ->whereIn('status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->where('tgl_jual', '>=', now()->subMonths(5)->startOfMonth())
+            ->groupByRaw('YEAR(tgl_jual), MONTH(tgl_jual)')
+            ->orderByRaw('YEAR(tgl_jual), MONTH(tgl_jual)')
+            ->get()
+            ->map(function ($row) {
+                $row->label = \Carbon\Carbon::create($row->tahun, $row->bulan, 1)->translatedFormat('M Y');
+                return $row;
+            });
+
+        // [5] Analisis Metode Pembayaran
+        $analisisMetode = Penjualan::selectRaw('metode_transaksi, COUNT(*) as jumlah, SUM(total) as total_omset')
+            ->whereIn('status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->groupBy('metode_transaksi')
+            ->get();
+
+        // [6] Rata-rata Nilai Transaksi (Average Order Value)
+        $totalTrxBulanIni = Penjualan::whereYear('tgl_jual', now()->year)
+            ->whereMonth('tgl_jual', now()->month)
+            ->whereIn('status_penjualan', ['diverifikasi', 'diproses', 'dikirim', 'selesai'])
+            ->count();
+        $aovBulanIni = $totalTrxBulanIni > 0 ? $omsetBulanIni / $totalTrxBulanIni : 0;
+
+        // [7] Insight Otomatis — Rekomendasi berbasis data
+        $insightList = [];
+
+        // Insight: pertumbuhan omset
+        if ($pertumbuhanOmset >= 10) {
+            $insightList[] = ['type' => 'success', 'icon' => '🚀', 'msg' => "Omset bulan ini tumbuh <strong>{$pertumbuhanOmset}%</strong> dibanding bulan lalu. Pertahankan tren positif ini!"];
+        } elseif ($pertumbuhanOmset < 0) {
+            $insightList[] = ['type' => 'danger', 'icon' => '📉', 'msg' => "Omset bulan ini turun <strong>" . abs($pertumbuhanOmset) . "%</strong> dari bulan lalu. Pertimbangkan promo atau diskon."];
+        } else {
+            $insightList[] = ['type' => 'warning', 'icon' => '📊', 'msg' => "Pertumbuhan omset bulan ini <strong>{$pertumbuhanOmset}%</strong>. Ada peluang meningkatkan penjualan lebih jauh."];
+        }
+
+        // Insight: stok kritis
+        if ($stokHabis > 0) {
+            $insightList[] = ['type' => 'danger', 'icon' => '⚠️', 'msg' => "<strong>{$stokHabis} varian beras</strong> stoknya habis. Segera koordinasi pengadaan dengan petani pemasok."];
+        }
+        if ($stokMenipis->count() > 0) {
+            $insightList[] = ['type' => 'warning', 'icon' => '📦', 'msg' => "<strong>{$stokMenipis->count()} varian beras</strong> stok di bawah 50 Kg. Rencanakan restock dalam waktu dekat."];
+        }
+
+        // Insight: produk terlaris bulan ini
+        if ($produkTerlaris->count() > 0) {
+            $topProduk = $produkTerlaris->first();
+            $insightList[] = ['type' => 'info', 'icon' => '🌾', 'msg' => "Produk terlaris bulan ini: <strong>{$topProduk->nama_produk}</strong> ({$topProduk->total_kg} Kg terjual). Pastikan stoknya tercukupi."];
+        }
+
+        // Insight: AOV
+        if ($aovBulanIni > 0) {
+            $aovFormatted = 'Rp ' . number_format($aovBulanIni, 0, ',', '.');
+            $insightList[] = ['type' => 'info', 'icon' => '🧾', 'msg' => "Rata-rata nilai transaksi (AOV) bulan ini <strong>{$aovFormatted}</strong>. Tingkatkan dengan bundling produk."];
+        }
+
         return view('admin.dashboard', compact(
             'user', 'role',
             'totalProduk', 'totalStokKg', 'totalCustomer', 'totalTransaksi', 'totalOmset', 'totalPemasok',
@@ -107,7 +211,12 @@ class AdminController extends Controller
             'fifoBatches', 'pesananMenunggu',
             'transaksiTerbaru', 'pasokanTerbaru',
             'chartPenjualan', 'laporanFifo',
-            'omsetBulanIni', 'hppBulanIni', 'labaBulanIni', 'kategoriSales'
+            'omsetBulanIni', 'hppBulanIni', 'labaBulanIni', 'kategoriSales',
+            // Data Analitik Cerdas
+            'omsetBulanLalu', 'pertumbuhanOmset',
+            'produkTerlaris', 'pelangganLoyal',
+            'trenBulanan', 'analisisMetode',
+            'aovBulanIni', 'insightList'
         ));
     }
 
