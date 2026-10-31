@@ -226,7 +226,12 @@
                     window.snap.pay('{{ $penjualan->pembayaran->snap_token }}', {
                         onSuccess: function(result){
                             console.log('Payment success:', result);
-                            window.location.reload();
+                            if (typeof bunyikanSuaraPembayaran === 'function') {
+                                bunyikanSuaraPembayaran({{ $penjualan->total }}, 'customer');
+                            }
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 3200);
                         },
                         onPending: function(result){
                             console.log('Payment pending:', result);

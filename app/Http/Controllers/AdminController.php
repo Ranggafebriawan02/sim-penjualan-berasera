@@ -240,6 +240,11 @@ class AdminController extends Controller
             'id_user'          => $user->id_user,
         ]);
 
-        return back()->with('success', 'Pembayaran tunai pesanan #' . $idPenjualan . ' berhasil divalidasi!');
+        return back()
+            ->with('success', 'Pembayaran tunai pesanan #' . $idPenjualan . ' berhasil divalidasi!')
+            ->with('audio_payment_success', [
+                'nominal' => $penjualan->total,
+                'aktor'   => 'admin',
+            ]);
     }
 }

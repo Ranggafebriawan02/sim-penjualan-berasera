@@ -58,7 +58,12 @@ class OrderController extends Controller
                 ]);
             }
             $penjualan->update(['status_penjualan' => 'diverifikasi']);
-            return back()->with('success', '✅ Pembayaran berhasil dikonfirmasi! Pesanan Anda sedang diproses.');
+            return back()
+                ->with('success', '✅ Pembayaran berhasil dikonfirmasi! Pesanan Anda sedang diproses.')
+                ->with('audio_payment_success', [
+                    'nominal' => $penjualan->total,
+                    'aktor'   => 'customer',
+                ]);
         } else {
             if ($pembayaran) {
                 $pembayaran->update(['status_pembayaran' => 'cancel']);

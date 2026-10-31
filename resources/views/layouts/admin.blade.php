@@ -906,6 +906,19 @@
         document.addEventListener('DOMContentLoaded', initSidebarState);
     </script>
 
+    <!-- Berasera Audio Notifier -->
+    <script src="{{ asset('js/berasera-audio.js') }}"></script>
+    @if(session('audio_payment_success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var audioData = @json(session('audio_payment_success'));
+                if (audioData && audioData.nominal) {
+                    bunyikanSuaraPembayaran(audioData.nominal, audioData.aktor || 'admin');
+                }
+            });
+        </script>
+    @endif
+
     @yield('scripts')
 </body>
 </html>

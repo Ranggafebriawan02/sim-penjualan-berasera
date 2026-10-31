@@ -77,7 +77,12 @@ class PenjualanController extends Controller
             'id_user'          => Auth::guard('web')->id(),
         ]);
 
-        return back()->with('success', 'Pembayaran pesanan #' . $id . ' berhasil dikonfirmasi!');
+        return back()
+            ->with('success', 'Pembayaran pesanan #' . $id . ' berhasil dikonfirmasi!')
+            ->with('audio_payment_success', [
+                'nominal' => $penjualan->total,
+                'aktor'   => 'admin',
+            ]);
     }
 
     public function tolakPembayaran(Request $request, $id)
