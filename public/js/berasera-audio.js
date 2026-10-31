@@ -72,22 +72,31 @@ function bunyikanChimeKasir() {
     }
 }
 
+// Variabel global agar objek utterance tidak di-garbage-collect oleh browser di tengah ucapan
+window._currentBeraseraUtterance = null;
+
 // Fungsi Utama: Bunyikan Notifikasi Pembayaran Berhasil
-function bunyikanSuaraPembayaran(nominal, aktor = 'customer') {
+function bunyikanSuaraPembayaran(nominal, aktor = 'customer', onFinishCallback = null) {
     // 1. Mainkan Chime Bel Kasir
     bunyikanChimeKasir();
 
     // 2. Cek ketersediaan Web Speech API
     if (!('speechSynthesis' in window)) {
         console.warn('Browser tidak mendukung Speech Synthesis.');
+        if (typeof onFinishCallback === 'function') onFinishCallback();
         return;
     }
 
-    // Tunggu chime selesai sebentar (0.4 detik) sebelum membaca
+    // Pastikan antrean sebelumnya dihentikan dan resume engine jika ter-pause
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+    }
+
+    // Tunggu chime selesai sebentar (0.35 detik) sebelum membaca
     setTimeout(() => {
         const nominalRupiah = angkaKeTerbilang(nominal) + ' rupiah';
         
-        // Kalimat resmi sesuai permintaan untuk pembeli maupun admin
         let teks = '';
         if (aktor === 'admin') {
             teks = `Pembayaran berhasil divalidasi. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera.`;
@@ -97,19 +106,36 @@ function bunyikanSuaraPembayaran(nominal, aktor = 'customer') {
 
         const utterance = new SpeechSynthesisUtterance(teks);
         utterance.lang = 'id-ID';
-        utterance.rate = 0.95; // Kecepatan nyaman dan natural
-        utterance.pitch = 1.05; // Sedikit dinaikkan agar ramah dan jernih
+        utterance.rate = 0.92; // Sedikit lebih santai agar sangat jelas
+        utterance.pitch = 1.0; 
 
-        // Coba cari voice bahasa Indonesia yang tersedia di browser jika ada
+        // Cari voice bahasa Indonesia terbaik
         const voices = window.speechSynthesis.getVoices();
-        const indoVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.name.toLowerCase().includes('indonesia'));
+        const indoVoice = voices.find(v => (v.lang && (v.lang.toLowerCase().includes('id') || v.lang.toLowerCase().includes('ind'))) || (v.name && v.name.toLowerCase().includes('indonesia')));
         if (indoVoice) {
             utterance.voice = indoVoice;
         }
 
-        window.speechSynthesis.cancel(); // Hentikan antrean suara sebelumnya
+        // Simpan ke window agar tidak dipotong oleh garbage collector
+        window._currentBeraseraUtterance = utterance;
+
+        utterance.onend = function () {
+            window._currentBeraseraUtterance = null;
+            if (typeof onFinishCallback === 'function') {
+                onFinishCallback();
+            }
+        };
+
+        utterance.onerror = function (e) {
+            console.error('SpeechSynthesis error:', e);
+            window._currentBeraseraUtterance = null;
+            if (typeof onFinishCallback === 'function') {
+                onFinishCallback();
+            }
+        };
+
         window.speechSynthesis.speak(utterance);
-    }, 400);
+    }, 350);
 }
 
 // Inisialisasi daftar voice saat browser memuatnya

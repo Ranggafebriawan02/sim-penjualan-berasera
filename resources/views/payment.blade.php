@@ -227,11 +227,13 @@
                         onSuccess: function(result){
                             console.log('Payment success:', result);
                             if (typeof bunyikanSuaraPembayaran === 'function') {
-                                bunyikanSuaraPembayaran({{ $penjualan->total }}, 'customer');
-                            }
-                            setTimeout(function() {
+                                // Tunggu sampai suara pembacaan kalimat selesai penuh, baru reload halaman
+                                bunyikanSuaraPembayaran({{ $penjualan->total }}, 'customer', function() {
+                                    window.location.reload();
+                                });
+                            } else {
                                 window.location.reload();
-                            }, 3200);
+                            }
                         },
                         onPending: function(result){
                             console.log('Payment pending:', result);
