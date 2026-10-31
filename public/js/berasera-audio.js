@@ -86,10 +86,11 @@ function bunyikanSuaraPembayaran(nominal, aktor = 'customer') {
     // Tunggu chime selesai sebentar (0.4 detik) sebelum membaca
     setTimeout(() => {
         const nominalRupiah = angkaKeTerbilang(nominal) + ' rupiah';
+        
+        // Kalimat resmi sesuai permintaan untuk pembeli maupun admin
         let teks = '';
-
         if (aktor === 'admin') {
-            teks = `Pembayaran berhasil divalidasi. Sebesar ${nominalRupiah}.`;
+            teks = `Pembayaran berhasil divalidasi. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera.`;
         } else {
             teks = `Pembayaran berhasil diterima. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera.`;
         }
@@ -117,3 +118,4 @@ if ('speechSynthesis' in window) {
         window.speechSynthesis.getVoices();
     };
 }
+
