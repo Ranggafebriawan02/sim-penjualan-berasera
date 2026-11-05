@@ -656,49 +656,109 @@ flowchart TD
     // Fungsi Render SVG ke PNG Canvas HD lalu trigger download
     function unduhDiagram(containerId, fileName) {
         const container = document.getElementById(containerId);
-        const svgElement = container.querySelector('svg');
-        if (!svgElement) {
-            alert('Diagram sedang dimuat, silakan tunggu sebentar.');
+        if (!container) {
+            alert('Container tidak ditemukan.');
             return;
         }
 
-        // Ambil data SVG XML
-        const serializer = new XMLSerializer();
-        let svgString = serializer.serializeToString(svgElement);
-
-        // Tambahkan namespace xml jika belum ada
-        if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
-            svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        const svgElement = container.querySelector('svg');
+        if (!svgElement) {
+            alert('Diagram sedang dimuat oleh Mermaid, silakan tunggu 2 detik lalu klik lagi.');
+            return;
         }
 
-        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        const URL = window.URL || window.webkitURL || window;
-        const blobURL = URL.createObjectURL(svgBlob);
+        try {
+            // Ambil ukuran asli diagram (viewBox atau bounding box)
+            let width = 0;
+            let height = 0;
 
-        const image = new Image();
-        image.onload = function () {
-            // Skala 2.5x agar hasil PNG super jernih dan tajam (HD)
-            const scale = 2.5;
-            const canvas = document.createElement('canvas');
-            canvas.width = (svgElement.getBoundingClientRect().width || 1200) * scale;
-            canvas.height = (svgElement.getBoundingClientRect().height || 800) * scale;
-            const context = canvas.getContext('2d');
-            
-            // Background putih bersih
-            context.fillStyle = '#ffffff';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            if (svgElement.viewBox && svgElement.viewBox.baseVal && svgElement.viewBox.baseVal.width > 0) {
+                width = svgElement.viewBox.baseVal.width;
+                height = svgElement.viewBox.baseVal.height;
+            } else {
+                const bBox = svgElement.getBBox();
+                width = bBox.width + 40;
+                height = bBox.height + 40;
+            }
 
-            const pngURL = canvas.toDataURL('image/png');
-            const downloadLink = document.createElement('a');
-            downloadLink.href = pngURL;
-            downloadLink.download = fileName;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(blobURL);
-        };
-        image.src = blobURL;
+            if (!width || width < 100) width = svgElement.scrollWidth || 1200;
+            if (!height || height < 100) height = svgElement.scrollHeight || 800;
+
+            // Salin SVG dan set atribut eksplisit
+            const svgClone = svgElement.cloneNode(true);
+            svgClone.setAttribute('width', width);
+            svgClone.setAttribute('height', height);
+            svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+            // Tambahkan inline background putih dan font styling
+            const styleElem = document.createElement('style');
+            styleElem.textContent = `
+                svg { background-color: #ffffff !important; }
+                text { font-family: 'Plus Jakarta Sans', Arial, sans-serif !important; }
+            `;
+            svgClone.insertBefore(styleElem, svgClone.firstChild);
+
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svgClone);
+
+            // Gunakan Base64 data URI agar aman dari pemblokiran blob di canvas
+            const base64Svg = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+
+            const image = new Image();
+            image.crossOrigin = 'anonymous';
+            image.onload = function () {
+                // Skala 3x agar hasil gambar super jernih dan tajam (300 DPI - Cocok untuk Word / Print)
+                const scale = 3.0;
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
+                // Background putih solid
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw image
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                // Trigger download
+                canvas.toBlob(function (blob) {
+                    if (!blob) {
+                        // Fallback data URL
+                        const link = document.createElement('a');
+                        link.download = fileName;
+                        link.href = canvas.toDataURL('image/png');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        return;
+                    }
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                }, 'image/png', 1.0);
+            };
+
+            image.onerror = function (err) {
+                console.error('Error saat render gambar:', err);
+                // Fallback: unduh format SVG yang tetap tajam 100% dan bisa di-insert langsung ke Microsoft Word
+                unduhSVG(containerId, fileName.replace('.png', '.svg'));
+                alert('Gambar SVG jernih telah diunduh. File .svg ini bisa langsung di-insert / ditarik ke Microsoft Word dengan kualitas 100% vektor tajam!');
+            };
+
+            image.src = base64Svg;
+        } catch (e) {
+            console.error('Exception render:', e);
+            unduhSVG(containerId, fileName.replace('.png', '.svg'));
+        }
     }
 
     // Fungsi Download Langsung Format Vektor SVG
@@ -735,3 +795,4 @@ flowchart TD
 </script>
 </body>
 </html>
+
