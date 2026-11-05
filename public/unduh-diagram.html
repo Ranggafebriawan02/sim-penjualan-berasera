@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unduh Diagram Lengkap — SIM Penjualan Berasera</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Mermaid JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            color: #a7f3d0;
+            font-size: 13.5px;
+            margin-top: 5px;
+        }
+
+        /* Nav Quick Jump */
+        .quick-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .quick-nav a {
+            background: white;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .quick-nav a:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Diagram Section Card */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 32px;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title h2 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-svg {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-svg:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .diagram-container {
+            background: #ffffff;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 24px;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 350px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>📥 Unduh Diagram Lengkap SIM Berasera</h1>
+            <p>Export Resolusi Tinggi (PNG / SVG) untuk ERD, Use Case, Activity, dan Flowchart Sistem</p>
+        </div>
+        <div>
+            <button class="btn-download" style="background: white; color: #047857;" onclick="unduhSemuaPNG()">
+                📦 Unduh Semua PNG Sekaligus
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Jump Menu -->
+    <div class="quick-nav">
+        <a href="#sec-erd">📊 1. ERD Lengkap (13 Tabel)</a>
+        <a href="#sec-usecase">🎭 2. Use Case Diagram</a>
+        <a href="#sec-flowchart">🔄 3. Flowchart End-to-End</a>
+        <a href="#sec-activity">⚡ 4. Activity Diagram</a>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 1. ERD LENGKAP -->
+    <!-- ============================================================== -->
+    <div id="sec-erd" class="section-card">
+        <div class="card-top">
+            <div class="card-title">
+                <h2>📊 1. Entity-Relationship Diagram (ERD Lengkap)</h2>
+                <p>Relasi 13 Tabel MySQL: Modul FIFO Gudang, Standar Mutu SNI, Transaksi, Midtrans & Poin Loyalitas</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn-download" onclick="unduhDiagram('container-erd', 'ERD_Lengkap_Berasera.png')">
+                    ⬇️ Unduh Gambar (PNG HD)
+                </button>
+                <button class="btn-svg" onclick="unduhSVG('container-erd', 'ERD_Lengkap_Berasera.svg')">
+                    📄 Unduh Vektor (SVG)
+                </button>
+            </div>
+        </div>
+        <div id="container-erd" class="diagram-container">
+            <div class="mermaid">
+erDiagram
+    tb_kategori ||--o{ tb_produk : "mengelompokkan"
+    tb_kualitas ||--o{ tb_produk : "standar mutu"
+    tb_produk ||--o{ tb_batch_beras : "antrean batch"
+    tb_produk ||--o{ tb_pasokan : "pasokan masuk"
+    tb_produk ||--o{ tb_penjualan_detail : "rincian order"
+
+    tb_pemasok ||--o{ tb_pasokan : "memasok gabah"
+    tb_user ||--o{ tb_pasokan : "mencatat"
+    tb_batch_beras ||--o{ tb_pasokan : "batch pasokan"
+
+    tb_customer ||--o{ tb_penjualan : "melakukan order"
+    tb_pengiriman ||--o{ tb_penjualan : "metode kurir"
+    tb_user ||--o{ tb_penjualan : "verifikasi"
+
+    tb_penjualan ||--|{ tb_penjualan_detail : "memiliki item"
+    tb_penjualan ||--o| tb_pembayaran : "pembayaran"
+    tb_user ||--o{ tb_pembayaran : "validasi kasir"
+
+    tb_penjualan_detail ||--|{ tb_pengeluaran_batch : "alokasi FIFO"
+    tb_batch_beras ||--o{ tb_pengeluaran_batch : "potong stok"
+
+    tb_customer ||--o{ tb_riwayat_poin : "mutasi poin"
+    tb_penjualan ||--o{ tb_riwayat_poin : "menghasilkan"
+
+    tb_kategori {
+        int id_kategori PK
+        varchar nama_kategori
+        text deskripsi_kategori
+    }
+
+    tb_kualitas {
+        int id_kualitas PK
+        varchar nama_kualitas
+        varchar standar_butir_patah
+        decimal kadar_air_maks
+        int derajat_sosoh_min
+        varchar keterangan_kemasan
+    }
+
+    tb_produk {
+        int id_produk PK
+        int id_kategori FK
+        int id_kualitas FK
+        varchar nama_produk
+        text deskripsi
+        varchar satuan
+        int harga
+        int stok
+        varchar gambar
+    }
+
+    tb_pemasok {
+        int id_pemasok PK
+        varchar nama_pemasok
+        varchar telepon
+        text alamat
+        varchar rekening_bank
+        enum status_pemasok
+    }
+
+    tb_batch_beras {
+        int id_batch PK
+        int id_produk FK
+        varchar kode_batch UK
+        date tgl_masuk
+        date tgl_panen_giling
+        date tgl_kadaluarsa
+        int stok_awal
+        int stok_sisa
+        int harga_pokok_beli
+        enum status_batch
+    }
+
+    tb_pasokan {
+        int id_pasokan PK
+        int id_pemasok FK
+        int id_produk FK
+        int id_batch FK
+        date tgl_pasok
+        int jumlah_kg
+        int harga_per_kg
+        int total_bayar
+        enum status_pembayaran_petani
+        int id_user FK
+    }
+
+    tb_user {
+        int id_user PK
+        varchar nama
+        varchar username UK
+        varchar password
+        varchar gambar
+        enum level
+    }
+
+    tb_customer {
+        int id_customer PK
+        varchar nama_customer
+        text alamat
+        varchar telepon
+        varchar email UK
+        varchar username UK
+        varchar password
+        int total_poin
+        enum tier_membership
+    }
+
+    tb_pengiriman {
+        int id_pengiriman PK
+        varchar nama_pengiriman
+        int minimal_ongkir
+    }
+
+    tb_penjualan {
+        varchar id_penjualan PK
+        date tgl_jual
+        int id_customer FK
+        int total
+        int ongkir
+        int poin_digunakan
+        int diskon_poin
+        int poin_didapat
+        text note
+        text alamat_pengiriman
+        enum status_penjualan
+        enum metode_transaksi
+        int id_pengiriman FK
+        int id_user FK
+    }
+
+    tb_penjualan_detail {
+        int id_penjualan_detail PK
+        varchar id_penjualan FK
+        int id_produk FK
+        int jumlah
+        int harga_satuan
+        int sub_total
+        varchar status_detail
+    }
+
+    tb_pengeluaran_batch {
+        int id_pengeluaran_batch PK
+        int id_penjualan_detail FK
+        int id_batch FK
+        int jumlah_keluar
+        int hpp_satuan
+        int subtotal_hpp
+    }
+
+    tb_pembayaran {
+        int id_pembayaran PK
+        varchar id_penjualan FK
+        enum gateway_provider
+        varchar transaction_id
+        varchar metode_pembayaran
+        varchar va_number
+        varchar snap_token
+        int nominal_bayar
+        enum status_pembayaran
+        datetime waktu_transaksi
+        datetime waktu_bayar
+        text payload_callback
+        int id_user FK
+    }
+
+    tb_riwayat_poin {
+        int id_riwayat_poin PK
+        int id_customer FK
+        varchar id_penjualan FK
+        enum jenis_mutasi
+        int jumlah_poin
+        int saldo_akhir
+        varchar keterangan
+        datetime tgl_mutasi
+    }
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. USE CASE DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="sec-usecase" class="section-card">
+        <div class="card-top">
+            <div class="card-title">
+                <h2>🎭 2. Use Case Diagram Sistem</h2>
+                <p>Hak akses dan kasus penggunaan 3 Aktor: Pembeli (Customer), Bendahara, dan Ketua Poktan</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn-download" onclick="unduhDiagram('container-usecase', 'UseCase_Diagram_Berasera.png')">
+                    ⬇️ Unduh Gambar (PNG HD)
+                </button>
+                <button class="btn-svg" onclick="unduhSVG('container-usecase', 'UseCase_Diagram_Berasera.svg')">
+                    📄 Unduh Vektor (SVG)
+                </button>
+            </div>
+        </div>
+        <div id="container-usecase" class="diagram-container">
+            <div class="mermaid">
+flowchart LR
+    subgraph Aktor["👥 Aktor Sistem"]
+        direction TB
+        C["👤 Pembeli (Customer)"]
+        B["💼 Bendahara"]
+        K["👑 Ketua Poktan"]
+    end
+
+    subgraph System["🌾 SIM Penjualan Berasera"]
+        direction TB
+        subgraph ModulPembeli["Modul Pembeli"]
+            UC1(["Lihat Katalog & Mutu SNI"])
+            UC2(["Kelola Keranjang Belanja"])
+            UC3(["Checkout & Pilih Ekspedisi"])
+            UC4(["Bayar Midtrans QRIS/VA & Tunai"])
+            UC5(["Pantau Riwayat & Poin Reward"])
+            UC6(["Kelola Profil & Alamat"])
+        end
+
+        subgraph ModulBendahara["Modul Bendahara"]
+            UC7(["Kelola Master Produk & Stok"])
+            UC8(["Pencatatan Pasokan Petani & Batch"])
+            UC9(["Validasi Pembayaran Tunai"])
+            UC10(["Pantau Antrean Batch FIFO"])
+            UC11(["Laporan Laba/Rugi & Pembelian"])
+        end
+
+        subgraph ModulKetua["Modul Eksekutif / Ketua"]
+            UC12(["Dashboard Analisis Penjualan & AI Insight"])
+            UC13(["Manajemen User & Akun Customer"])
+            UC14(["Monitoring Performa Penjualan & Mitra"])
+        end
+    end
+
+    %% Relasi Customer
+    C --> UC1
+    C --> UC2
+    C --> UC3
+    C --> UC4
+    C --> UC5
+    C --> UC6
+
+    %% Relasi Bendahara
+    B --> UC7
+    B --> UC8
+    B --> UC9
+    B --> UC10
+    B --> UC11
+
+    %% Relasi Ketua
+    K --> UC12
+    K --> UC13
+    K --> UC14
+    K -.->|Akses Penuh| UC11
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. FLOWCHART SISTEM LENGKAP -->
+    <!-- ============================================================== -->
+    <div id="sec-flowchart" class="section-card">
+        <div class="card-top">
+            <div class="card-title">
+                <h2>🔄 3. Flowchart Sistem End-to-End</h2>
+                <p>Alur Logika: Pasokan Gabah, Order, Percabangan Bayar (Midtrans vs Kasir), dan Algoritma FIFO HPP</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn-download" onclick="unduhDiagram('container-flowchart', 'Flowchart_Sistem_Berasera.png')">
+                    ⬇️ Unduh Gambar (PNG HD)
+                </button>
+                <button class="btn-svg" onclick="unduhSVG('container-flowchart', 'Flowchart_Sistem_Berasera.svg')">
+                    📄 Unduh Vektor (SVG)
+                </button>
+            </div>
+        </div>
+        <div id="container-flowchart" class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    subgraph FC_HULU["1. Alur Hulu: Pasokan Gabah Petani & Batch FIFO"]
+        P_Start([Mulai Pasokan]) --> P1[Petani Kirim Gabah/Beras ke Gudang]
+        P1 --> P2[Bendahara Input Pasokan: Petani, Produk, Kg, Harga Beli]
+        P2 --> P3[Sistem Generate Batch Baru tb_batch_beras: kode_batch & tgl_masuk]
+        P3 --> P4[Update Stok Agregat tb_produk]
+        P4 --> P_End([Batch Masuk Antrean FIFO Gudang])
+    end
+
+    subgraph FC_ORDER["2. Alur Pembelian: Keranjang & Checkout"]
+        C_Start([Mulai Order]) --> C1[Pembeli Pilih Beras & Masukkan Keranjang]
+        C1 --> C2[Buka Halaman Checkout]
+        C2 --> C3{Gunakan Poin Reward?}
+        C3 -->|Ya| C4[Potong Diskon Poin Rp 100/poin]
+        C3 -->|Tidak| C5[Hitung Total Belanja + Ongkir]
+        C4 --> C5
+        C5 --> C6{Pilih Metode Transaksi?}
+    end
+
+    subgraph FC_BAYAR["3. Alur Pembayaran & Validasi"]
+        C6 -->|Midtrans QRIS / VA| M1[Generate Snap Token Midtrans]
+        M1 --> M2[Pembeli Bayar via QRIS / Bank Transfer]
+        M2 --> M3[Webhook Callback Midtrans Diterima]
+        M3 --> M4{Status Settlement?}
+        M4 -->|Gagal/Expired| M_Batal[Pesanan Dibatalkan / Expire]
+        M4 -->|Sukses| M_Lunas[Status Pesanan: Diverifikasi]
+
+        C6 -->|Tunai / Kasir| T1[Pesanan Disimpan: Status Menunggu Verifikasi]
+        T1 --> T2[Pembeli Bayar Tunai ke Bendahara]
+        T2 --> T3[Bendahara Konfirmasi Bayar di SIM]
+        T3 --> M_Lunas
+    end
+
+    subgraph FC_FIFO["4. Alur Algoritma Pengeluaran FIFO & Selesai"]
+        M_Lunas --> F1[Ambil Daftar Batch dengan Stok > 0 Urut tgl_masuk ASC]
+        F1 --> F2{Apakah Qty Order <= Stok Batch Pertama?}
+        F2 -->|Ya| F3[Kurangi Stok Batch Pertama & Catat HPP di tb_pengeluaran_batch]
+        F2 -->|Tidak| F4[Habiskan Stok Batch Pertama, Catat HPP]
+        F4 --> F5[Ambil Sisa Qty dari Batch Berikutnya secara Berurutan]
+        F5 --> F3
+        F3 --> F6[Potong Stok Agregat tb_produk]
+        F6 --> F7[Hitung & Tambahkan Poin Reward ke tb_customer]
+        F7 --> F8[Cetak Struk Pembelian & Update Laporan Laba/Rugi FIFO]
+        F8 --> Finish([Selesai])
+    end
+
+    %% Relasi antar subgraf
+    P_End -.->|Ketersediaan Stok| C1
+    C6 --> M1
+    C6 --> T1
+    M_Batal --> FinishBatal([Selesai - Dibatalkan])
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 4. ACTIVITY DIAGRAM -->
+    <!-- ============================================================== -->
+    <div id="sec-activity" class="section-card">
+        <div class="card-top">
+            <div class="card-title">
+                <h2>⚡ 4. Activity Diagram (Checkout & Alokasi FIFO)</h2>
+                <p>Swimlane Alur Aktivitas Pelanggan, Sistem SIM, dan Pemotongan Stok Gudang</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn-download" onclick="unduhDiagram('container-activity', 'Activity_Diagram_Berasera.png')">
+                    ⬇️ Unduh Gambar (PNG HD)
+                </button>
+                <button class="btn-svg" onclick="unduhSVG('container-activity', 'Activity_Diagram_Berasera.svg')">
+                    📄 Unduh Vektor (SVG)
+                </button>
+            </div>
+        </div>
+        <div id="container-activity" class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    Start([● Mulai]) --> A1[Pembeli Tambah Beras ke Keranjang]
+    A1 --> A2[Buka Halaman Checkout]
+    A2 --> A3[Pilih Metode Pengiriman & Opsi Diskon Poin]
+    A3 --> A4{Pilih Metode Bayar?}
+    
+    A4 -->|Midtrans QRIS / VA| B1[Sistem Request Snap Token Midtrans]
+    A4 -->|Tunai / COD| B2[Set Status Pesanan: Menunggu Verifikasi]
+    
+    B1 --> C1[Pembeli Melakukan Pembayaran via E-Wallet/Bank]
+    C1 --> C2[Midtrans Kirim HTTP Webhook Notifikasi]
+    C2 --> C3{Status Webhook Settlement?}
+    
+    C3 -->|Gagal / Kadaluarsa| C4[Set Status: Dibatalkan / Expire]
+    C4 --> EndGagal([● Selesai - Gagal])
+    
+    C3 -->|Berhasil / Lunas| D1[Update tb_pembayaran: settlement]
+    B2 --> D0[Bendahara Konfirmasi Pembayaran Kasir]
+    D0 --> D1
+
+    D1 --> F1[Ambil Antrean Batch Beras Tertua tgl_masuk ASC]
+    F1 --> F2{Stok Batch Tertua Cukup?}
+    
+    F2 -->|Cukup| F3[Potong Stok Batch & Catat HPP di tb_pengeluaran_batch]
+    F2 -->|Kurang| F4[Habiskan Batch Tertua, Sisa Diambil dari Batch Berikutnya]
+    F4 --> F3
+
+    F3 --> G1[Potong Stok Agregat tb_produk]
+    G1 --> G2[Tambah Poin Loyalitas ke Akun Customer]
+    G2 --> G3[Pesanan Masuk Status Siap Kirim / Selesai]
+    G3 --> EndSukses([● Selesai - Berhasil])
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        SIM Penjualan Beras Organik Berasera • Poktan Gapsera Sejahtera Mandiri, Kota Metro
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+            primaryColor: '#ecfdf5',
+            primaryTextColor: '#064e3b',
+            primaryBorderColor: '#10b981',
+            lineColor: '#059669',
+            secondaryColor: '#f0fdf4',
+            tertiaryColor: '#ffffff'
+        }
+    });
+
+    // Fungsi Render SVG ke PNG Canvas HD lalu trigger download
+    function unduhDiagram(containerId, fileName) {
+        const container = document.getElementById(containerId);
+        const svgElement = container.querySelector('svg');
+        if (!svgElement) {
+            alert('Diagram sedang dimuat, silakan tunggu sebentar.');
+            return;
+        }
+
+        // Ambil data SVG XML
+        const serializer = new XMLSerializer();
+        let svgString = serializer.serializeToString(svgElement);
+
+        // Tambahkan namespace xml jika belum ada
+        if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+            svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobURL = URL.createObjectURL(svgBlob);
+
+        const image = new Image();
+        image.onload = function () {
+            // Skala 2.5x agar hasil PNG super jernih dan tajam (HD)
+            const scale = 2.5;
+            const canvas = document.createElement('canvas');
+            canvas.width = (svgElement.getBoundingClientRect().width || 1200) * scale;
+            canvas.height = (svgElement.getBoundingClientRect().height || 800) * scale;
+            const context = canvas.getContext('2d');
+            
+            // Background putih bersih
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            const pngURL = canvas.toDataURL('image/png');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngURL;
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(blobURL);
+        };
+        image.src = blobURL;
+    }
+
+    // Fungsi Download Langsung Format Vektor SVG
+    function unduhSVG(containerId, fileName) {
+        const container = document.getElementById(containerId);
+        const svgElement = container.querySelector('svg');
+        if (!svgElement) {
+            alert('Diagram sedang dimuat, silakan tunggu sebentar.');
+            return;
+        }
+
+        const serializer = new XMLSerializer();
+        let svgString = serializer.serializeToString(svgElement);
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobURL = URL.createObjectURL(svgBlob);
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = blobURL;
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(blobURL);
+    }
+
+    // Fungsi Unduh Semua Sekaligus
+    function unduhSemuaPNG() {
+        unduhDiagram('container-erd', '1_ERD_Lengkap_Berasera.png');
+        setTimeout(() => unduhDiagram('container-usecase', '2_UseCase_Diagram_Berasera.png'), 600);
+        setTimeout(() => unduhDiagram('container-flowchart', '3_Flowchart_Sistem_Berasera.png'), 1200);
+        setTimeout(() => unduhDiagram('container-activity', '4_Activity_Diagram_Berasera.png'), 1800);
+    }
+</script>
+</body>
+</html>
