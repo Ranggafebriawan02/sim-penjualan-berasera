@@ -99,9 +99,9 @@ function bunyikanSuaraPembayaran(nominal, aktor = 'customer', onFinishCallback =
         
         let teks = '';
         if (aktor === 'admin') {
-            teks = `Pembayaran berhasil divalidasi. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera.`;
+            teks = `Pembayaran berhasil divalidasi. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera. Uhuyyy!`;
         } else {
-            teks = `Pembayaran berhasil diterima. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera.`;
+            teks = `Pembayaran berhasil diterima. Sebesar ${nominalRupiah}. Terima kasih telah berbelanja di Berasera. Uhuyyy!`;
         }
 
         const utterance = new SpeechSynthesisUtterance(teks);
